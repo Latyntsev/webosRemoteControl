@@ -8,15 +8,26 @@
 
 import Cocoa
 import HotKey
+import SnapKit
 
 class ControlViewController: NSViewController {
     weak var communicator: WebOSCommunicator? {
         didSet {
             oldValue?.stateChangeHandler = nil
-            communicator?.stateChangeHandler = { [weak self] in self?.stateUpdated($0) }
+            communicator?.stateChangeHandler = { [weak self] in
+                self?.stateUpdated($0)
+            }
+            communicator?.connectionStatusCallback = { [weak self] in
+                self?.connectionStateUpdated(index: $0, status: $1)
+            }
         }
     }
+    @IBOutlet weak var inputsStackView: NSStackView!
     @IBOutlet weak var muteButton: NSButton!
+    @IBOutlet weak var statusLabel1: NSTextField!
+    @IBOutlet weak var statusLabel2: NSTextField!
+    @IBOutlet weak var testDataTextField: NSTextField!
+
     var hotKeys: [HotKey] = []
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +37,30 @@ class ControlViewController: NSViewController {
     private func stateUpdated(_ state: WebOSCommunicator.State) {
         let volume = state.mute ? "🔇" : "\(state.volume)"
         muteButton.title = volume
+
+        var previousButtons = inputsStackView.arrangedSubviews.compactMap({ $0 as? InputButton })
+        inputsStackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+        for input in state.input {
+            func createButton() -> InputButton {
+                let button = InputButton(title: "", target: self, action: #selector(onTapInput(_:)))
+                button.snp.makeConstraints {
+                    $0.width.equalTo(100)
+                }
+                return button
+            }
+            let button = previousButtons.popLast() ?? createButton()
+            button.title = input.label
+            button.input = input
+            inputsStackView.addArrangedSubview(button)
+        }
+    }
+
+    private func connectionStateUpdated(index: Int, status: String) {
+        switch index {
+        case 0: statusLabel1.stringValue = status
+        case 1: statusLabel2.stringValue = status
+        default: assertionFailure()
+        }
     }
 
     func subscribeKeyboardEvents() {
@@ -118,5 +153,26 @@ class ControlViewController: NSViewController {
     @IBAction func onClickMute(_ sender: Any? = nil) {
         guard let mute = communicator?.state.mute else { return }
         communicator?.setMute(!mute)
+    }
+
+    @IBAction func onClickConnect(_ sender: Any) {
+        communicator?.connect()
+    }
+
+    @IBAction func onTapDisconnect1(_ sender: Any) {
+        communicator?.tvWebSocket?.disconnect()
+    }
+
+    @IBAction func onTapDisconnect2(_ sender: Any) {
+        communicator?.inputWebSocket?.disconnect()
+    }
+
+    @IBAction func onTapSendTestData(_ sender: Any) {
+        communicator?.sendTestData(testDataTextField.stringValue)
+    }
+
+    @objc func onTapInput(_ sender: InputButton) {
+        guard let input = sender.input else { return }
+        communicator?.switchInput(input.id)
     }
 }

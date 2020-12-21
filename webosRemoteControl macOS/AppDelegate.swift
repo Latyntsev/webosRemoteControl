@@ -7,22 +7,23 @@
 //
 
 import Cocoa
+import HotKey
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var dataProvider = DataProvider()
-    var tasks: [Task] = []
-    var activateAppHoteKey:
+    var activateAppHotKey: HotKey?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+        activateAppHotKey = HotKey(key: .tab,
+                                   modifiers: [.command, .shift],
+                                   keyDownHandler: { [weak self] in self?.activate() })
     }
 
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+    func activate() {
+        NSApplication.shared.activate(ignoringOtherApps: true)
     }
-
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
 }
+

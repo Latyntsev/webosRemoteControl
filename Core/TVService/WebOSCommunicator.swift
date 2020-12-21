@@ -8,11 +8,9 @@
 
 import Foundation
 import Starscream
-import PromiseKit
 import SwiftyJSON
 
 class WebOSCommunicator {
-
     enum RegisterState {
         case checking
         case registration
@@ -22,6 +20,7 @@ class WebOSCommunicator {
     typealias ResponseHandlerType = (JSON) -> Bool
     var stateChangeHandler: ((State) -> Void)?
     var registerStateChangedHandler: ((RegisterState) -> Void)?
+    var connectionStatusCallback: ((Int, String) -> Void)?
     var state = State() {
         didSet {
             stateChangeHandler?(state)
@@ -33,8 +32,8 @@ class WebOSCommunicator {
     let port: Int = 3001
     private var storage: SimpleStorage
     private var key: String?
-    private var tvWebSocket: WebSocket?
-    private var inputWebSocket: WebSocket?
+    var tvWebSocket: WebSocketWrapper?
+    var inputWebSocket: WebSocketWrapper?
     private var responseHandlers = [String: ResponseHandlerType]()
     private var idCounter = 0
 
@@ -47,11 +46,8 @@ class WebOSCommunicator {
 
     func connect() {
         registerStateChangedHandler?(.checking)
-        var request = URLRequest(url: URL(string: "wss://\(host):\(port)")!)
-        request.timeoutInterval = 5
-        request.addValue("chrome-extension://remote-control", forHTTPHeaderField: "Origin")
-        let pinner = FoundationSecurity(allowSelfSigned: true)
-        tvWebSocket = WebSocket(request: request, certPinner: pinner)
+        let url = URL(string: "wss://\(host):\(port)")!
+        tvWebSocket = WebSocketWrapper(url, allowSelfSigned: true)
         tvWebSocket?.onEvent = { [weak self] in
             self?.onEvent($0)
         }
@@ -68,13 +64,12 @@ class WebOSCommunicator {
             processIncomingMessage(JSON(parseJSON: text))
         case .disconnected(let message, let code):
             Log().debug("Disconnected", message, code)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                self?.tvWebSocket?.connect()
-            }
         default:
             Log().debug(event)
             break
         }
+
+        connectionStatusCallback?(0, "\(event)")
     }
 
     private func processIncomingMessage(_ json: JSON) {
@@ -223,19 +218,42 @@ class WebOSCommunicator {
     }
 
     private func setupInputWebSocket(path: String) {
-        var request = URLRequest(url: URL(string: path)!)
-        request.timeoutInterval = 5
-        inputWebSocket = WebSocket(request: request, certPinner: FoundationSecurity(allowSelfSigned: true))
-        inputWebSocket?.onEvent = {
-            print("Input WebSocket", $0)
+        inputWebSocket = WebSocketWrapper(URL(string: path)!, allowSelfSigned: true)
+        inputWebSocket?.onEvent = { [weak self] in
+            switch $0 {
+            case .disconnected(let message, let code):
+                Log().debug("Disconnected", message, code)
+            default:
+                print("Input WebSocket", $0)
+                break
+            }
+            self?.connectionStatusCallback?(1, "\($0)")
         }
         inputWebSocket?.connect()
+        inputWebSocket?.reconnectDependency = { [weak self] socket, callback in
+            guard let self = self else {
+                callback(false)
+                return
+            }
+            self.request(uri: "ssap://com.webos.service.networkinput/getPointerInputSocket") {
+                guard let inputSocketPath = $0["payload"]["socketPath"].string else {
+                    callback(false)
+                    return
+                }
+                socket.url = URL(string: inputSocketPath)!
+                callback(true)
+            }
+        }
     }
 
     private func registered() {
         registerStateChangedHandler?(.registered)
         subscribe(uri: "ssap://audio/getVolume") { [weak self] in
             self?.state.updateVolume(payload: $0["payload"])
+        }
+
+        subscribe(uri: "ssap://tv/getExternalInputList") { [weak self] in
+            self?.state.updateInputList(payload: $0["payload"])
         }
 
 //        subscribe(uri: "ssap://audio/getAppState") { [weak self] in
@@ -384,6 +402,18 @@ class WebOSCommunicator {
             print(#function, $0)
         }
     }
+
+    func switchInput(_ identifier: String) {
+        request(uri: "ssap://tv/switchInput", payload: ["inputId": identifier]) {
+            print(#function, $0)
+        }
+    }
+
+    func sendTestData(_ data: String) {
+        request(uri: "ssap://\(data)") {
+            print(#function, $0)
+        }
+    }
 }
 
 extension WebOSCommunicator {
@@ -437,12 +467,43 @@ extension WebOSCommunicator {
         var maxVolume: Int = 0
         var volume: Int = 0
         var mute: Bool = false
+        var input: [InputDevice] = []
 
         mutating func updateVolume(payload: JSON) {
             let payload = payload["volumeStatus"]
             maxVolume = payload["maxVolume"].intValue
             volume = payload["volume"].intValue
             mute = payload["muteStatus"].boolValue
+        }
+
+        mutating func updateInputList(payload: JSON) {
+            input = payload["devices"].arrayValue.map({ InputDevice($0) })
+        }
+    }
+
+    struct InputDevice {
+        let id: String
+        let appId: String
+        let icon: String
+        let label: String
+        let modified: Bool
+        let favorite: Bool
+        let connected: Bool
+        let subCount: Int
+        let port: Int
+        let forceIcon: Bool
+
+        init(_ json: JSON) {
+            id = json["id"].stringValue
+            appId = json["appId"].stringValue
+            icon = json["icon"].stringValue
+            label = json["label"].stringValue
+            modified = json["modified"].boolValue
+            favorite = json["favorite"].boolValue
+            connected = json["connected"].boolValue
+            subCount = json["subCount"].intValue
+            port = json["port"].intValue
+            forceIcon = json["forceIcon"].boolValue
         }
     }
 }

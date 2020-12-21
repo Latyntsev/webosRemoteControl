@@ -21,6 +21,10 @@
 		0C4DE4FA24EC0AEA00CC7270 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 0C4DE4F924EC0AEA00CC7270 /* Starscream */; };
 		0C4DE50124EC726500CC7270 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 0C4DE50024EC726500CC7270 /* SwiftyJSON */; };
 		0C4DE50724ED0EE000CC7270 /* ControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4DE50624ED0EE000CC7270 /* ControlViewController.swift */; };
+		0C58043D25912C0E009BA96A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0C58043C25912C0E009BA96A /* SnapKit */; };
+		0C58044025913400009BA96A /* InputButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C58043F25913400009BA96A /* InputButton.swift */; };
+		0C63AFBD255E770E004282E3 /* WebSocketWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63AFBC255E770E004282E3 /* WebSocketWrapper.swift */; };
+		0C63AFBE255E770E004282E3 /* WebSocketWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63AFBC255E770E004282E3 /* WebSocketWrapper.swift */; };
 		0C724EDA2501674E00ED7166 /* WebServiceResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4DE4DD24EBF6D500CC7270 /* WebServiceResource.swift */; };
 		0C724EDB2501674E00ED7166 /* ModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4DE50D24ED496D00CC7270 /* ModelProtocol.swift */; };
 		0C724EDC2501674E00ED7166 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4DE4F124EBFDDB00CC7270 /* Logger.swift */; };
@@ -135,6 +139,8 @@
 		0C4DE50D24ED496D00CC7270 /* ModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProtocol.swift; sourceTree = "<group>"; };
 		0C4DE51024ED4C4F00CC7270 /* ServiceProxyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProxyModel.swift; sourceTree = "<group>"; };
 		0C4DE51324EDDBA000CC7270 /* ThrottleRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottleRequest.swift; sourceTree = "<group>"; };
+		0C58043F25913400009BA96A /* InputButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputButton.swift; sourceTree = "<group>"; };
+		0C63AFBC255E770E004282E3 /* WebSocketWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketWrapper.swift; sourceTree = "<group>"; };
 		0CF4DAFD2506ADDE0075F3B5 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		0CF4DAFF2506BD7C0075F3B5 /* ControlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewController.swift; sourceTree = "<group>"; };
 		0CF4DB0125076B600075F3B5 /* ScriptableTasks.sdef */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScriptableTasks.sdef; sourceTree = "<group>"; };
@@ -163,6 +169,7 @@
 				0C9C3DE42508C73F0016DF19 /* HotKey in Frameworks */,
 				0C724EFF2501676A00ED7166 /* SwiftyJSON in Frameworks */,
 				0C724F052501677500ED7166 /* PromiseKit in Frameworks */,
+				0C58043D25912C0E009BA96A /* SnapKit in Frameworks */,
 				0C724F032501677500ED7166 /* SwiftyXMLParser in Frameworks */,
 				0C724F072501677500ED7166 /* Starscream in Frameworks */,
 				0C724F012501677500ED7166 /* Socket in Frameworks */,
@@ -217,6 +224,7 @@
 		0C4DE49424EBF09300CC7270 /* webosRemoteControl macOS */ = {
 			isa = PBXGroup;
 			children = (
+				0C58043E259133EE009BA96A /* Components */,
 				0C4DE49524EBF09300CC7270 /* AppDelegate.swift */,
 				0CF4DAFD2506ADDE0075F3B5 /* MainViewController.swift */,
 				0CF4DAFF2506BD7C0075F3B5 /* ControlViewController.swift */,
@@ -240,6 +248,7 @@
 		0C4DE4C724EBF4ED00CC7270 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				0C63AFBC255E770E004282E3 /* WebSocketWrapper.swift */,
 				0C4DE4C824EBF4ED00CC7270 /* Data+Helper.swift */,
 				0C4DE4C924EBF4ED00CC7270 /* HelperFunctions.swift */,
 				0C4DE4CA24EBF4ED00CC7270 /* Array+Helper.swift */,
@@ -293,6 +302,14 @@
 				0C4DE51024ED4C4F00CC7270 /* ServiceProxyModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0C58043E259133EE009BA96A /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				0C58043F25913400009BA96A /* InputButton.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		0CB2E74524FE21D000002D5E /* Core */ = {
@@ -360,6 +377,7 @@
 				0C724F042501677500ED7166 /* PromiseKit */,
 				0C724F062501677500ED7166 /* Starscream */,
 				0C9C3DE32508C73F0016DF19 /* HotKey */,
+				0C58043C25912C0E009BA96A /* SnapKit */,
 			);
 			productName = "webosRemoteControl macOS";
 			productReference = 0C4DE49324EBF09300CC7270 /* webosRemoteControl.app */;
@@ -399,6 +417,7 @@
 				0C4DE4F824EC0AEA00CC7270 /* XCRemoteSwiftPackageReference "Starscream" */,
 				0C4DE4FF24EC726500CC7270 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				0C9C3DE22508C73F0016DF19 /* XCRemoteSwiftPackageReference "HotKey" */,
+				0C58043B25912C0E009BA96A /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			productRefGroup = 0C4DE46924EBF09300CC7270 /* Products */;
 			projectDirPath = "";
@@ -451,6 +470,7 @@
 				0C724EDE2501674E00ED7166 /* DiscoverySSDP.LocationDetails.swift in Sources */,
 				0C724EE42501674E00ED7166 /* HelperFunctions.swift in Sources */,
 				0C724EE22501674E00ED7166 /* UDPDatagram.swift in Sources */,
+				0C63AFBD255E770E004282E3 /* WebSocketWrapper.swift in Sources */,
 				0C724EEB2501674E00ED7166 /* BodyProtocol.swift in Sources */,
 				0C724EE02501674E00ED7166 /* DiscoverySSDP.swift in Sources */,
 				0C724EDA2501674E00ED7166 /* WebServiceResource.swift in Sources */,
@@ -484,11 +504,13 @@
 				0C4DE49624EBF09300CC7270 /* AppDelegate.swift in Sources */,
 				0C724EF82501674E00ED7166 /* Array+Helper.swift in Sources */,
 				0C724EFA2501674E00ED7166 /* SimpleStorage.swift in Sources */,
+				0C63AFBE255E770E004282E3 /* WebSocketWrapper.swift in Sources */,
 				0CF4DB04250772D80075F3B5 /* BaseWindow.swift in Sources */,
 				0CF4DB062507870C0075F3B5 /* Keyboard.swift in Sources */,
 				0C724EEF2501674E00ED7166 /* Data+Helper.swift in Sources */,
 				0C724EEE2501674E00ED7166 /* Logger.swift in Sources */,
 				0CF6987F2513D8A100CCABD6 /* PreferenceViewController.swift in Sources */,
+				0C58044025913400009BA96A /* InputButton.swift in Sources */,
 				0CF4DAFE2506ADDE0075F3B5 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -802,6 +824,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		0C58043B25912C0E009BA96A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
+			};
+		};
 		0C9C3DE22508C73F0016DF19 /* XCRemoteSwiftPackageReference "HotKey" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/soffes/HotKey";
@@ -837,6 +867,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C4DE4FF24EC726500CC7270 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		0C58043C25912C0E009BA96A /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C58043B25912C0E009BA96A /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 		0C724EFE2501676A00ED7166 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
